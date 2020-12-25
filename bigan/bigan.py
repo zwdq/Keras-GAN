@@ -1,3 +1,4 @@
+# python3 bigan.py 
 from __future__ import print_function, division
 
 from keras.datasets import mnist
@@ -16,6 +17,11 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
+
+#不加这段报错
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 class BIGAN():
     def __init__(self):
         self.img_rows = 28
@@ -32,10 +38,10 @@ class BIGAN():
             optimizer=optimizer,
             metrics=['accuracy'])
 
-        # Build the generator
+        # Build the generator 生成
         self.generator = self.build_generator()
 
-        # Build the encoder
+        # Build the encoder 编码
         self.encoder = self.build_encoder()
 
         # The part of the bigan that trains the discriminator and encoder
@@ -126,13 +132,12 @@ class BIGAN():
         X_train = (X_train.astype(np.float32) - 127.5) / 127.5
         X_train = np.expand_dims(X_train, axis=3)
 
-        # Adversarial ground truths
+        # Adversarial ground truths  这是好像是重点
         valid = np.ones((batch_size, 1))
         fake = np.zeros((batch_size, 1))
 
         for epoch in range(epochs):
-
-
+            
             # ---------------------
             #  Train Discriminator
             # ---------------------
@@ -158,14 +163,15 @@ class BIGAN():
             # Train the generator (z -> img is valid and img -> z is is invalid)
             g_loss = self.bigan_generator.train_on_batch([z, imgs], [valid, fake])
 
-            # Plot the progress
+            # 输出训练过程
             print ("%d [D loss: %f, acc: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100*d_loss[1], g_loss[0]))
 
-            # If at save interval => save generated image samples
+            # 每隔sample_interval个epoch保存一次,400个
             if epoch % sample_interval == 0:
                 self.sample_interval(epoch)
 
     def sample_interval(self, epoch):
+        # 保存5*5的子图
         r, c = 5, 5
         z = np.random.normal(size=(25, self.latent_dim))
         gen_imgs = self.generator.predict(z)
@@ -177,8 +183,9 @@ class BIGAN():
         for i in range(r):
             for j in range(c):
                 axs[i,j].imshow(gen_imgs[cnt, :,:,0], cmap='gray')
-                axs[i,j].axis('off')
+                axs[i,j].axis('off') #关闭坐标轴
                 cnt += 1
+        #保存图像
         fig.savefig("images/mnist_%d.png" % epoch)
         plt.close()
 

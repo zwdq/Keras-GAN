@@ -1,3 +1,4 @@
+# python3 ccgan.py 
 from __future__ import print_function, division
 
 from keras.datasets import mnist
@@ -17,6 +18,11 @@ import scipy
 import matplotlib.pyplot as plt
 
 import numpy as np
+
+
+#不加这段报错
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 class CCGAN():
     def __init__(self):

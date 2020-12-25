@@ -1,3 +1,4 @@
+# python3 acgan.py 
 from __future__ import print_function, division
 
 from keras.datasets import mnist
@@ -11,6 +12,10 @@ from keras.optimizers import Adam
 import matplotlib.pyplot as plt
 
 import numpy as np
+
+#不加这段报错
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
 class ACGAN():
     def __init__(self):
@@ -208,4 +213,4 @@ class ACGAN():
 
 if __name__ == '__main__':
     acgan = ACGAN()
-    acgan.train(epochs=14000, batch_size=32, sample_interval=200)
+    acgan.train(epochs=500, batch_size=32, sample_interval=200)
